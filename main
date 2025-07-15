@@ -1,0 +1,264 @@
+#include "ofApp.h"
+
+float x = 0;
+float y = 0;
+float r = 30;
+float i = 0;
+float barrelAngle = 0;
+float barrelX = 0;
+float barrelY = 0;
+
+float bulletX, bulletY;
+float bulletAngle;
+float bulletSpeed;
+bool bulletActive;
+bool bulletReached = false;
+
+float x2 = 0;
+float y2 = 0;
+float r2 = 30;
+float i2 = 0;
+float barrelAngle2 = 0;
+float barrelX2 = 0;
+float barrelY2 = 0;
+
+float bulletX2, bulletY2;
+float bulletAngle2;
+float bulletSpeed2;
+bool bulletActive2;
+bool bulletReached2 = false;
+//--------------------------------------------------------------
+void ofApp::setup(){
+    x = ofGetWidth() / 2;
+    y = ofGetHeight() / 2;
+    ofSetFrameRate(60);
+    barrelAngle = 0;
+    bulletSpeed = 15;
+    bulletActive = false;
+    
+    x2 = ofGetWidth() / 4;
+        y2 = ofGetHeight() / 2;
+        barrelAngle2 = 0;
+        bulletSpeed2 = 15;
+        bulletActive2 = false;}
+
+//--------------------------------------------------------------
+void ofApp::update(){
+    
+    
+    // Update barrel position
+    barrelX = x + r * 2 * cos(ofDegToRad(barrelAngle));
+    barrelY = y + r * 2 * sin(ofDegToRad(barrelAngle));
+    
+    // Update bullet position if active
+    if (bulletActive) {
+        bulletX += bulletSpeed * cos(ofDegToRad(bulletAngle));
+        bulletY += bulletSpeed * sin(ofDegToRad(bulletAngle));
+        
+        
+        if (bulletX < 0 || bulletX > ofGetWidth() || bulletY < 0 || bulletY > ofGetHeight()) {
+            bulletActive = false;
+            bulletReached = true;
+        }
+    }
+    //explosion
+    if (bulletReached) {
+        i += 10;
+        if (i > 100) {
+            bulletReached = false;
+            i = 0;
+        }
+    }
+    
+    barrelX = x + r * 2 * cos(ofDegToRad(barrelAngle));
+    barrelY = y + r * 2 * sin(ofDegToRad(barrelAngle));
+    
+    
+    
+    
+
+    barrelX2 = x2 + r2 * 2 * cos(ofDegToRad(barrelAngle2));
+    barrelY2 = y2 + r2 * 2 * sin(ofDegToRad(barrelAngle2));
+    
+    if (bulletActive2) {
+        bulletX2 += bulletSpeed2 * cos(ofDegToRad(bulletAngle2));
+        bulletY2 += bulletSpeed2 * sin(ofDegToRad(bulletAngle2));
+        if (bulletX2 < 0 || bulletX2 > ofGetWidth() || bulletY2 < 0 || bulletY2 > ofGetHeight()) {
+            bulletActive2 = false;
+            bulletReached2 = true;
+        }
+    }
+    if (bulletReached2) {
+        i2 += 10;
+        if (i2 > 100) {
+            bulletReached2 = false;
+            i2 = 0;
+        }
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+    
+        if (bulletReached == true) {
+            ofSetColor(255, 0, 0);
+            ofDrawCircle(bulletX, bulletY, i);
+        }
+
+        
+        ofSetColor(222, 38, 24);
+        ofDrawCircle(x, y, r);
+        ofSetColor(0);
+        ofSetLineWidth(50);
+        ofDrawLine(x, y, barrelX, barrelY);
+
+        
+        if (bulletActive) {
+            ofSetColor(255, 50, 50);
+            ofDrawCircle(bulletX, bulletY, 5);
+        }
+
+        
+        ofSetColor(24, 38, 222);
+        ofDrawCircle(x2, y2, r);
+        ofSetColor(0);
+        ofSetLineWidth(50);
+        ofDrawLine(x2, y2, barrelX2, barrelY2);
+
+        
+        if (bulletActive2) {
+            ofSetColor(50, 50, 255);
+            ofDrawCircle(bulletX2, bulletY2, 5);
+        }
+
+        
+        if (bulletReached2) {
+            ofSetColor(0, 0, 255);
+            ofDrawCircle(bulletX2, bulletY2, i2);
+        }
+
+        
+        ofSetColor(255);
+        ofDrawBitmapString("Player 1 Angle: " + ofToString(barrelAngle, 1), 20, 20);
+        ofDrawBitmapString("Player 2 Angle: " + ofToString(barrelAngle2, 1), 20, 40);
+    }
+
+    
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::keyPressed(ofKeyEventArgs &key){
+    //keypressed
+
+        if (key.key == '.') {
+            barrelAngle = fmod(barrelAngle - 5, 360);
+        }
+        else if (key.key == ',') {
+            barrelAngle = fmod((barrelAngle + 5 + 360), 360);
+        
+    }
+    
+    if (key.key == OF_KEY_SPACE && !bulletActive) {
+        bulletX = barrelX;
+        bulletY = barrelY;
+        bulletAngle = barrelAngle;
+        bulletActive = true;
+        return;
+    }
+    
+    
+    if (x > ofGetWidth() - r)  x -= 15;
+    if (x < r)                 x += 15;
+    if (y > ofGetHeight() - r) y -= 15;
+    if (y < r)                 y += 15;
+
+    
+    if (key.key == OF_KEY_RIGHT) x += 15;
+    if (key.key == OF_KEY_LEFT)  x -= 15;
+    if (key.key == OF_KEY_DOWN)  y += 15;
+    if (key.key == OF_KEY_UP)    y -= 15;
+    
+    if (key.key == 'q') {
+        barrelAngle2 = fmod(barrelAngle2 - 5 + 360, 360);
+    }
+
+    if (key.key == 'e') {
+        barrelAngle2 = fmod(barrelAngle2 + 5, 360);
+    }
+    if (key.key == 'f' && !bulletActive2) {
+        bulletX2 = barrelX2;
+        bulletY2 = barrelY2;
+        bulletAngle2 = barrelAngle2;
+        bulletActive2 = true;
+        return;
+    }
+    if (x2 > ofGetWidth() - r2)  x2 -= 15;
+    if (x2 < r2)                 x2 += 15;
+    if (y2 > ofGetHeight() - r2) y2 -= 15;
+    if (y2 < r2)                 y2 += 15;
+
+    if (key.key == 'd') x2 += 15;
+    if (key.key == 'a') x2 -= 15;
+    if (key.key == 's') y2 += 15;
+    if (key.key == 'w') y2 -= 15;
+}
+
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y ){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseScrolled(int x, int y, float scrollX, float scrollY){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseEntered(int x, int y){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseExited(int x, int y){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg){
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo){ 
+
+}
