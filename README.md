@@ -1,5 +1,5 @@
 # CannonWars
-CANNONWARS!!! (written in OpenFramworks)
+CANNONWARS!!! (written in OpenFrameworks)
 
 
 # Red Player(A)
