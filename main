@@ -1,146 +1,183 @@
+// skins: Red(222, 38, 24), Blue(24, 38, 222), Black(0, 0, 0)
+
+
 #include "ofApp.h"
+// Red
+float redX = 0;
+float redY = 0;
+float redRadius = 30;
+float redExplode = 0;
+float redBarrelAngle = 0;
+float redBarrelX = 0;
+float redBarrelY = 0;
+float redBulletX, redBulletY;
+float redBulletAngle;
+float redBulletSpeed;
+bool redBulletActive;
+bool redBulletReached = false;
+bool redHit = false;
+int redHitTimer = 0;
 
-float x = 0;
-float y = 0;
-float r = 30;
-float i = 0;
-float barrelAngle = 0;
-float barrelX = 0;
-float barrelY = 0;
-
-float bulletX, bulletY;
-float bulletAngle;
-float bulletSpeed;
-bool bulletActive;
-bool bulletReached = false;
-
-float x2 = 0;
-float y2 = 0;
-float r2 = 30;
-float i2 = 0;
-float barrelAngle2 = 0;
-float barrelX2 = 0;
-float barrelY2 = 0;
-
-float bulletX2, bulletY2;
-float bulletAngle2;
-float bulletSpeed2;
-bool bulletActive2;
-bool bulletReached2 = false;
+//Blue
+float blueX = 0;
+float blueY = 0;
+float blueRadius = 30;
+float blueExplode = 0;
+float blueBarrelAngle = 0;
+float blueBarrelX = 0;
+float blueBarrelY = 0;
+float blueBulletX, blueBulletY;
+float blueBulletAngle;
+float blueBulletSpeed;
+bool blueBulletActive;
+bool blueBulletReached = false;
 //--------------------------------------------------------------
 void ofApp::setup(){
-    x = ofGetWidth() / 2;
-    y = ofGetHeight() / 2;
-    ofSetFrameRate(60);
-    barrelAngle = 0;
-    bulletSpeed = 15;
-    bulletActive = false;
+    blueX = ofGetWidth() / 4;
+    blueY = ofGetHeight() / 2;
+    blueBarrelAngle = 0;
+    blueBulletSpeed = 15;
+    blueBulletActive = false;
     
-    x2 = ofGetWidth() / 4;
-        y2 = ofGetHeight() / 2;
-        barrelAngle2 = 0;
-        bulletSpeed2 = 15;
-        bulletActive2 = false;}
+    
+    
+    redX = ofGetWidth() - blueX;
+    redY = blueY;
+    ofSetFrameRate(60);
+    redBarrelAngle = 180;
+    redBulletSpeed = 30;
+    redBulletActive = false;
+    
+    
+}
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
     
     // Update barrel position
-    barrelX = x + r * 2 * cos(ofDegToRad(barrelAngle));
-    barrelY = y + r * 2 * sin(ofDegToRad(barrelAngle));
+    redBarrelX = redX + redRadius * 2 * cos(ofDegToRad(redBarrelAngle));
+    redBarrelY = redY + redRadius * 2 * sin(ofDegToRad(redBarrelAngle));
     
     // Update bullet position if active
-    if (bulletActive) {
-        bulletX += bulletSpeed * cos(ofDegToRad(bulletAngle));
-        bulletY += bulletSpeed * sin(ofDegToRad(bulletAngle));
+    if (redBulletActive) {
+        redBulletX += redBulletSpeed * cos(ofDegToRad(redBulletAngle));
+        redBulletY += redBulletSpeed * sin(ofDegToRad(redBulletAngle));
         
+        if (redBulletX < 0 || redBulletX > ofGetWidth() || redBulletY < 0 || redBulletY > ofGetHeight()) {
+            redBulletActive = false;
+            redBulletReached = true;
+        }
         
-        if (bulletX < 0 || bulletX > ofGetWidth() || bulletY < 0 || bulletY > ofGetHeight()) {
-            bulletActive = false;
-            bulletReached = true;
+        float impacted = (blueX - redBulletX) * (blueX - redBulletX) + (blueY - redBulletY) * (blueY - redBulletY) <= (blueRadius + 5) * (blueRadius + 5);
+        
+        if (impacted) {
+            redBulletReached = true;
+            redBulletActive = false;
         }
     }
     //explosion
-    if (bulletReached) {
-        i += 10;
-        if (i > 100) {
-            bulletReached = false;
-            i = 0;
+    if (redBulletReached) {
+        redExplode += 10;
+        if (redExplode > 100) {
+            redBulletReached = false;
+            redExplode = 0;
         }
     }
     
-    barrelX = x + r * 2 * cos(ofDegToRad(barrelAngle));
-    barrelY = y + r * 2 * sin(ofDegToRad(barrelAngle));
+    redBarrelX = redX + redRadius * 2 * cos(ofDegToRad(redBarrelAngle));
+    redBarrelY = redY + redRadius * 2 * sin(ofDegToRad(redBarrelAngle));
     
+    blueBarrelX = blueX + blueRadius * 2 * cos(ofDegToRad(blueBarrelAngle));
+    blueBarrelY = blueY + blueRadius * 2 * sin(ofDegToRad(blueBarrelAngle));
     
+    if (blueBulletActive) {
+        blueBulletX += blueBulletSpeed * cos(ofDegToRad(blueBulletAngle));
+        blueBulletY += blueBulletSpeed * sin(ofDegToRad(blueBulletAngle));
+        if (blueBulletX < 0 || blueBulletX > ofGetWidth() || blueBulletY < 0 || blueBulletY > ofGetHeight()) {
+            blueBulletActive = false;
+            blueBulletReached = true;
+        }
+        
+        float impacted = (redX - blueBulletX) * (redX - blueBulletX) + (redY - blueBulletY) * (redY - blueBulletY) <= (redRadius + 5) * (redRadius + 5);
+        
+        if (impacted) {
+            blueBulletReached = true;
+            blueBulletActive = false;
+        }
+    }
     
-    
+    if (blueBulletReached) {
+        blueExplode += 10;
+        if (blueExplode > 100) {
+            blueBulletReached = false;
+            blueExplode = 0;
+        }
+    }
 
-    barrelX2 = x2 + r2 * 2 * cos(ofDegToRad(barrelAngle2));
-    barrelY2 = y2 + r2 * 2 * sin(ofDegToRad(barrelAngle2));
-    
-    if (bulletActive2) {
-        bulletX2 += bulletSpeed2 * cos(ofDegToRad(bulletAngle2));
-        bulletY2 += bulletSpeed2 * sin(ofDegToRad(bulletAngle2));
-        if (bulletX2 < 0 || bulletX2 > ofGetWidth() || bulletY2 < 0 || bulletY2 > ofGetHeight()) {
-            bulletActive2 = false;
-            bulletReached2 = true;
-        }
+    if (redX < ofGetWidth() / 2 + redRadius){
+        redX = ofGetWidth() / 2 + redRadius;
     }
-    if (bulletReached2) {
-        i2 += 10;
-        if (i2 > 100) {
-            bulletReached2 = false;
-            i2 = 0;
-        }
+    if (redX > ofGetWidth() - redRadius){
+        redX = ofGetWidth() - redRadius;
+    }
+
+    if (blueX < redRadius){
+        blueX = redRadius;
+    }
+    if (blueX > ofGetWidth() / 2 - blueRadius){
+        blueX = ofGetWidth() / 2 - blueRadius;
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-        if (bulletReached == true) {
+    ofSetColor(100);
+    ofSetLineWidth(5);
+    ofDrawLine(ofGetWidth() / 2, 0, ofGetWidth() / 2, ofGetHeight());
+
+        if (redBulletReached == true) {
             ofSetColor(255, 0, 0);
-            ofDrawCircle(bulletX, bulletY, i);
+            ofDrawCircle(redBulletX, redBulletY, redExplode);
         }
 
         
         ofSetColor(222, 38, 24);
-        ofDrawCircle(x, y, r);
+        ofDrawCircle(redX, redY, redRadius);
         ofSetColor(0);
         ofSetLineWidth(50);
-        ofDrawLine(x, y, barrelX, barrelY);
+        ofDrawLine(redX, redY, redBarrelX, redBarrelY);
 
         
-        if (bulletActive) {
+        if (redBulletActive) {
             ofSetColor(255, 50, 50);
-            ofDrawCircle(bulletX, bulletY, 5);
+            ofDrawCircle(redBulletX, redBulletY, 5);
         }
 
         
         ofSetColor(24, 38, 222);
-        ofDrawCircle(x2, y2, r);
+        ofDrawCircle(blueX, blueY, redRadius);
         ofSetColor(0);
         ofSetLineWidth(50);
-        ofDrawLine(x2, y2, barrelX2, barrelY2);
+        ofDrawLine(blueX, blueY, blueBarrelX, blueBarrelY);
 
         
-        if (bulletActive2) {
+        if (blueBulletActive) {
             ofSetColor(50, 50, 255);
-            ofDrawCircle(bulletX2, bulletY2, 5);
+            ofDrawCircle(blueBulletX, blueBulletY, 5);
         }
 
         
-        if (bulletReached2) {
+        if (blueBulletReached) {
             ofSetColor(0, 0, 255);
-            ofDrawCircle(bulletX2, bulletY2, i2);
+            ofDrawCircle(blueBulletX, blueBulletY, blueExplode);
         }
 
         
         ofSetColor(255);
-        ofDrawBitmapString("Player 1 Angle: " + ofToString(barrelAngle, 1), 20, 20);
-        ofDrawBitmapString("Player 2 Angle: " + ofToString(barrelAngle2, 1), 20, 40);
+        ofDrawBitmapString("Player RED Angle: " + ofToString(redBarrelAngle, 1), 825, 20);
+        ofDrawBitmapString("Player BLUE Angle: " + ofToString(blueBarrelAngle, 1), 20, 20);
     }
 
     
@@ -155,56 +192,56 @@ void ofApp::keyPressed(ofKeyEventArgs &key){
     //keypressed
 
         if (key.key == '.') {
-            barrelAngle = fmod(barrelAngle - 5, 360);
+            redBarrelAngle = fmod(redBarrelAngle - 5, 360);
         }
         else if (key.key == ',') {
-            barrelAngle = fmod((barrelAngle + 5 + 360), 360);
+            redBarrelAngle = fmod((redBarrelAngle + 5 + 360), 360);
         
     }
     
-    if (key.key == OF_KEY_SPACE && !bulletActive) {
-        bulletX = barrelX;
-        bulletY = barrelY;
-        bulletAngle = barrelAngle;
-        bulletActive = true;
+    if (key.key == OF_KEY_SPACE && !redBulletActive) {
+        redBulletX = redBarrelX;
+        redBulletY = redBarrelY;
+        redBulletAngle = redBarrelAngle;
+        redBulletActive = true;
         return;
     }
     
     
-    if (x > ofGetWidth() - r)  x -= 15;
-    if (x < r)                 x += 15;
-    if (y > ofGetHeight() - r) y -= 15;
-    if (y < r)                 y += 15;
+    if (redX > ofGetWidth() - redRadius)  redX -= 15;
+    if (redX < redRadius)                 redX += 15;
+    if (redY > ofGetHeight() - redRadius) redY -= 15;
+    if (redY < redRadius)                 redY += 15;
 
     
-    if (key.key == OF_KEY_RIGHT) x += 15;
-    if (key.key == OF_KEY_LEFT)  x -= 15;
-    if (key.key == OF_KEY_DOWN)  y += 15;
-    if (key.key == OF_KEY_UP)    y -= 15;
+    if (key.key == OF_KEY_RIGHT) redX += 15;
+    if (key.key == OF_KEY_LEFT)  redX -= 15;
+    if (key.key == OF_KEY_DOWN)  redY += 15;
+    if (key.key == OF_KEY_UP)    redY -= 15;
     
-    if (key.key == 'q') {
-        barrelAngle2 = fmod(barrelAngle2 - 5 + 360, 360);
-    }
-
     if (key.key == 'e') {
-        barrelAngle2 = fmod(barrelAngle2 + 5, 360);
+        blueBarrelAngle = fmod(blueBarrelAngle - 5 + 360, 360);
     }
-    if (key.key == 'f' && !bulletActive2) {
-        bulletX2 = barrelX2;
-        bulletY2 = barrelY2;
-        bulletAngle2 = barrelAngle2;
-        bulletActive2 = true;
+
+    if (key.key == 'q') {
+        blueBarrelAngle = fmod(blueBarrelAngle + 5, 360);
+    }
+    if (key.key == 'f' && !blueBulletActive) {
+        blueBulletX = blueBarrelX;
+        blueBulletY = blueBarrelY;
+        blueBulletAngle = blueBarrelAngle;
+        blueBulletActive = true;
         return;
     }
-    if (x2 > ofGetWidth() - r2)  x2 -= 15;
-    if (x2 < r2)                 x2 += 15;
-    if (y2 > ofGetHeight() - r2) y2 -= 15;
-    if (y2 < r2)                 y2 += 15;
+    if (blueX > ofGetWidth() - blueRadius)  blueX -= 15;
+    if (blueX < blueRadius)                 blueX += 15;
+    if (blueY > ofGetHeight() - blueRadius) blueY -= 15;
+    if (blueY < blueRadius)                 blueY += 15;
 
-    if (key.key == 'd') x2 += 15;
-    if (key.key == 'a') x2 -= 15;
-    if (key.key == 's') y2 += 15;
-    if (key.key == 'w') y2 -= 15;
+    if (key.key == 'd') blueX += 15;
+    if (key.key == 'a') blueX -= 15;
+    if (key.key == 's') blueY += 15;
+    if (key.key == 'w') blueY -= 15;
 }
 
 
@@ -262,3 +299,4 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
