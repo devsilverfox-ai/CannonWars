@@ -17,6 +17,9 @@ bool redBulletActive;
 bool redBulletReached = false;
 bool redHit = false;
 int redHitTimer = 0;
+int redLives = 3;
+bool redHit = false;
+
 
 //Blue
 float blueX = 0;
@@ -31,6 +34,9 @@ float blueBulletAngle;
 float blueBulletSpeed;
 bool blueBulletActive;
 bool blueBulletReached = false;
+int blueLives = 3;
+bool blueWasHit = false;
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     blueX = ofGetWidth() / 4;
@@ -55,6 +61,7 @@ void ofApp::setup(){
 void ofApp::update(){
     
     
+
     // Update barrel position
     redBarrelX = redX + redRadius * 2 * cos(ofDegToRad(redBarrelAngle));
     redBarrelY = redY + redRadius * 2 * sin(ofDegToRad(redBarrelAngle));
@@ -71,10 +78,11 @@ void ofApp::update(){
         
         float impacted = (blueX - redBulletX) * (blueX - redBulletX) + (blueY - redBulletY) * (blueY - redBulletY) <= (blueRadius + 5) * (blueRadius + 5);
         
-        if (impacted) {
-            redBulletReached = true;
-            redBulletActive = false;
-        }
+        if (impacted && !blueWasHit) {
+    redBulletReached = true;
+    redBulletActive = false;
+    blueLives--;
+    blueWasHit = true;
     }
     //explosion
     if (redBulletReached) {
@@ -82,6 +90,7 @@ void ofApp::update(){
         if (redExplode > 100) {
             redBulletReached = false;
             redExplode = 0;
+            redWasHit = false;
         }
     }
     
@@ -101,10 +110,11 @@ void ofApp::update(){
         
         float impacted = (redX - blueBulletX) * (redX - blueBulletX) + (redY - blueBulletY) * (redY - blueBulletY) <= (redRadius + 5) * (redRadius + 5);
         
-        if (impacted) {
-            blueBulletReached = true;
-            blueBulletActive = false;
-        }
+        if (impacted && !redWasHit) {
+    blueBulletReached = true;
+    blueBulletActive = false;
+    redLives--;
+    redWasHit = true;
     }
     
     if (blueBulletReached) {
@@ -112,6 +122,7 @@ void ofApp::update(){
         if (blueExplode > 100) {
             blueBulletReached = false;
             blueExplode = 0;
+            blueWasHit = false;
         }
     }
 
@@ -132,6 +143,20 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+
+
+    
+for (int i = 0; i < redLives; i++) {
+    ofSetColor(222, 38, 24);
+    ofDrawCircle(ofGetWidth() - 50 - i * 40, 50, 15);
+}
+
+
+for (int i = 0; i < blueLives; i++) {
+    ofSetColor(24, 38, 222);
+    ofDrawCircle(50 + i * 40, 50, 15);
+}
+
     
     ofSetColor(100);
     ofSetLineWidth(5);
